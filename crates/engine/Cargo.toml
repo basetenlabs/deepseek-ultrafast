@@ -1,0 +1,17 @@
+[package]
+name = "deepseek-ultrafast-engine"
+edition.workspace = true
+version.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+deepseek-ultrafast-logging = { path = "../logging" }
+deepseek-ultrafast-cuda = { path = "../cuda" }
+deepseek-ultrafast-kernels = { path = "../kernels" }
+deepseek-ultrafast-kv-transfer = { path = "../kv-transfer", default-features = false }
+deepseek-ultrafast-model = { path = "../model" }
+half.workspace = true
+cudarc = { workspace = true, features = ["cublas", "cudnn-09010"] }
+rayon.workspace = true
+serde_json.workspace = true
+tokenizers.workspace = true

@@ -1,0 +1,8 @@
+[package]
+name = "deepseek-ultrafast-cuda"
+edition.workspace = true
+version.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+cudarc.workspace = true

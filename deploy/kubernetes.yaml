@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deepseek-ultrafast-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: deepseek-ultrafast-redis}
+  template:
+    metadata:
+      labels: {app: deepseek-ultrafast-redis}
+    spec:
+      containers:
+        - name: redis
+          image: redis:7
+          args: ["--save", "", "--appendonly", "no"]
+          ports:
+            - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: deepseek-ultrafast-redis
+spec:
+  selector: {app: deepseek-ultrafast-redis}
+  ports:
+    - port: 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deepseek-ultrafast
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: deepseek-ultrafast}
+  template:
+    metadata:
+      labels: {app: deepseek-ultrafast}
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: serve
+          image: deepseek-ultrafast:latest
+          args: ["--gpus", "0,1,2,3", "--port", "8000"]
+          env:
+            - name: DSUF_KV_HOST
+              valueFrom:
+                fieldRef: {fieldPath: status.podIP}
+            - name: DSUF_REDIS_URL
+              value: redis://deepseek-ultrafast-redis:6379
+          ports:
+            - {name: http, containerPort: 8000}
+            - {name: kv, containerPort: 19500}
+          resources:
+            limits:
+              nvidia.com/gpu: 4
+              rdma/hca: 1
+          startupProbe:
+            httpGet: {path: /readyz, port: http}
+            periodSeconds: 5
+            failureThreshold: 120
+          readinessProbe:
+            httpGet: {path: /readyz, port: http}
+            periodSeconds: 2
+          volumeMounts:
+            - {name: models, mountPath: /models, readOnly: true}
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: deepseek-ultrafast-models
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: deepseek-ultrafast
+spec:
+  selector: {app: deepseek-ultrafast}
+  ports:
+    - {name: http, port: 8000, targetPort: http}

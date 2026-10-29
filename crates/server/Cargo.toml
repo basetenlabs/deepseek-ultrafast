@@ -1,0 +1,43 @@
+[package]
+name = "deepseek-ultrafast-server"
+edition.workspace = true
+version.workspace = true
+
+[features]
+default = ["gpu"]
+gpu = ["dep:deepseek-ultrafast-cuda", "dep:deepseek-ultrafast-engine", "dep:deepseek-ultrafast-kv-transfer"]
+
+[[bin]]
+name = "serve"
+path = "src/main.rs"
+required-features = ["gpu"]
+
+[dependencies]
+anyhow.workspace = true
+deepseek-ultrafast-logging = { path = "../logging" }
+http-body = "1"
+axum = "0.8"
+deepseek-ultrafast-cuda = { path = "../cuda", optional = true }
+deepseek-ultrafast-engine = { path = "../engine", optional = true }
+deepseek-ultrafast-model = { path = "../model" }
+deepseek-ultrafast-kv-transfer = { path = "../kv-transfer", optional = true }
+deepseek-recipe = { git = "https://github.com/deepseek-ai/deepseek-recipe", rev = "8cadfede7063c896b944e7bae05daa3549ae97ea" }
+deepseek-recipe-core = { git = "https://github.com/deepseek-ai/deepseek-recipe", rev = "8cadfede7063c896b944e7bae05daa3549ae97ea" }
+deepseek-recipe-encoding = { git = "https://github.com/deepseek-ai/deepseek-recipe", rev = "8cadfede7063c896b944e7bae05daa3549ae97ea" }
+deepseek-recipe-image = { git = "https://github.com/deepseek-ai/deepseek-recipe", rev = "8cadfede7063c896b944e7bae05daa3549ae97ea" }
+futures = "0.3"
+half.workspace = true
+opencv = { version = "0.93", default-features = false, features = ["imgcodecs", "imgproc"] }
+reqwest = { version = "0.12.28", default-features = false, features = ["rustls-tls", "stream"] }
+sha2 = "0.10"
+url = "2"
+rand = "0.9"
+rayon.workspace = true
+serde.workspace = true
+serde_json = { version = "1", features = ["preserve_order"] }
+tokenizers.workspace = true
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "net", "signal"] }
+tokio-stream = "0.1"
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }
