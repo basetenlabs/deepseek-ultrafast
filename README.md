@@ -7,9 +7,11 @@ An ultra-fast inference engine for **DeepSeek-V4.1-Flash** for `sm_100a` and `sm
 | | 4 x GB300 (TP4) | 8 x B300 (TP8) |
 |---|---|---|
 | **Decode** (coding) | **1,740 tokens/s** | **2,060 tokens/s** |
+| **Step time** | **3.30 ms** | **2.71 ms** |
+| **Acceptance length** | **5.6 tokens/step** | **5.7 tokens/step** |
 | **Prefill** | **1,000,000 tokens in 13.2 s** (76,000 tokens/s) | **1,000,000 tokens in 11.7 s** (85,000 tokens/s) |
 
-Decode is measured on *"implement the tetris game. output HTML code directly - no explanation."* Instructions for reproducing the results are at the bottom of this page.
+Decode, step time and acceptance length are measured on *"implement the tetris game. output HTML code directly - no explanation."* Each decode step drafts a block of tokens and verifies it; the acceptance length is the average number of tokens a step emits. Instructions for reproducing the results are at the bottom of this page.
 
 <p align="center">
   <img src="docs/tetris-demo.gif" alt="Live demo: DeepSeek-V4.1-Flash streams a complete Tetris game in HTML while a speedometer shows the decode speed in tokens per second, then the finished game runs next to the generated code" width="800">
@@ -116,6 +118,10 @@ EOF
 It ends with a line like `5142 tokens at 1,717 tokens/s (first token after 0.04 s)`.
 
 We see 1,700-1,770 tokens/s on 4xGB300 and 1,980-2,170 tokens/s on 8xB300 (`--gpus 0,1,2,3,4,5,6,7`).
+
+The server's `request_end` log line reports each request's step time (`average_iteration_ms`) and acceptance length
+(`average_accept_length`). Over 30 runs we see 3.24-3.37 ms and 5.1-6.1 tokens/step on 4xGB300, and 2.69-2.74 ms and
+5.3-6.1 tokens/step on 8xB300.
 
 ## Third-party libraries
 
