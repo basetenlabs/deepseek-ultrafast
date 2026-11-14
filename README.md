@@ -8,7 +8,7 @@ An ultra-fast inference engine for **DeepSeek-V4.1-Flash** for `sm_100a` and `sm
 |---|---|---|
 | **Decode** (coding) | **1,740 tokens/s** | **2,060 tokens/s** |
 | **Step time** | **3.30 ms** | **2.71 ms** |
-| **Acceptance length** | **5.6 tokens/step** | **5.7 tokens/step** |
+| **Acceptance length** | **5.6 tokens/step** |
 | **Prefill** | **1,000,000 tokens in 13.2 s** (76,000 tokens/s) | **1,000,000 tokens in 11.7 s** (85,000 tokens/s) |
 
 Decode, step time and acceptance length are measured on *"implement the tetris game. output HTML code directly - no explanation."* Each decode step drafts a block of tokens and verifies it; the acceptance length is the average number of tokens a step emits. Instructions for reproducing the results are at the bottom of this page.
